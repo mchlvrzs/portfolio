@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MV.">
+  <!-- Site brand mark: MV. on deep purple -->
+  <rect width="64" height="64" rx="14" fill="#4A1D8A"/>
+  <text
+    x="32"
+    y="42"
+    text-anchor="middle"
+    font-family="Instrument Sans, Arial, Helvetica, sans-serif"
+    font-size="24"
+    font-weight="700"
+    fill="#F7F4FB"
+    letter-spacing="-1"
+  >MV.</text>
+</svg>

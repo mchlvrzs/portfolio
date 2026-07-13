@@ -1,0 +1,617 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Portfolio color palette */
+    --color-off-white: lab(96.6832% 0.739634 -1.32236);
+    --color-secondary-emphasis: lab(94.7791% 5.17303 -7.68878);
+    --color-purple-25: lab(95.3714% 2.99028 -5.30963);
+    --color-purple-50: lab(88.902% 7.6583 -13.3947);
+    --color-purple-100: lab(80.4675% 13.814 -24.0968);
+    --color-purple-200: lab(64.9698% 26.024 -43.8936);
+    --color-purple-300: lab(53.1369% 37.1011 -59.4583);
+    --color-purple-400: lab(47.014% 46.7393 -67.0967);
+    --color-purple-500: lab(41.5427% 55.3528 -73.7588);
+    --color-purple-600: lab(29.0714% 49.8121 -63.4164);
+
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-float-delayed: float 6s ease-in-out 2s infinite;
+    --animate-spin-slow: spin-slow 20s linear infinite;
+    --animate-pulse-glow: pulse-glow 4s ease-in-out infinite;
+    --animate-marquee: marquee 30s linear infinite;
+    --animate-bounce-soft: bounce-soft 2s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-18px) rotate(2deg); }
+}
+
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.05); }
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes bounce-soft {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(32px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-off-white text-purple-500 antialiased overflow-x-hidden;
+    }
+
+    ::selection {
+        @apply bg-purple-100 text-purple-600;
+    }
+}
+
+@layer components {
+    /* Subtle section backgrounds — neutrals first, purple only as a whisper */
+    .bg-section {
+        @apply bg-off-white;
+    }
+
+    .bg-section-alt {
+        @apply bg-secondary-emphasis;
+    }
+
+    /* Contact band — dark violet */
+    .contact-section {
+        background:
+            radial-gradient(circle at 18% 20%, color-mix(in lab, var(--color-purple-400) 35%, transparent), transparent 42%),
+            radial-gradient(circle at 88% 70%, color-mix(in lab, var(--color-purple-500) 40%, transparent), transparent 45%),
+            var(--color-purple-600);
+    }
+
+    .bg-mesh {
+        background-color: var(--color-off-white);
+        background-image:
+            radial-gradient(circle at 15% 10%, color-mix(in lab, var(--color-secondary-emphasis) 80%, transparent) 0%, transparent 50%),
+            radial-gradient(circle at 85% 90%, color-mix(in lab, var(--color-purple-25) 60%, transparent) 0%, transparent 45%);
+    }
+
+    /* Typography — purple reserved for headings & accents */
+    .text-heading {
+        @apply text-purple-600;
+    }
+
+    .text-label {
+        @apply text-purple-400;
+    }
+
+    .text-body {
+        @apply text-purple-500;
+    }
+
+    .text-muted {
+        color: color-mix(in lab, var(--color-purple-500) 70%, var(--color-off-white));
+    }
+
+    .accent-text {
+        @apply text-purple-600 font-bold;
+    }
+
+    /* Scroll-reveal */
+    .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .reveal-left {
+        opacity: 0;
+        transform: translateX(-40px);
+        transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal-left.is-visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .reveal-right {
+        opacity: 0;
+        transform: translateX(40px);
+        transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal-right.is-visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .reveal-scale {
+        opacity: 0;
+        transform: scale(0.92);
+        transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal-scale.is-visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    [data-stagger] > .reveal,
+    [data-stagger] > .reveal-scale {
+        transition-delay: calc(var(--stagger-index, 0) * 100ms);
+    }
+
+    /* Name highlight — single accent colour, no rainbow gradient */
+    .gradient-text {
+        @apply text-purple-600;
+    }
+
+    /* Nav wordmark — bold MV. mark */
+    .brand-logo {
+        @apply inline-flex items-baseline text-2xl font-bold tracking-tight text-purple-600;
+        letter-spacing: -0.04em;
+        line-height: 1;
+    }
+
+    .brand-logo__dot {
+        @apply text-purple-600;
+    }
+
+    /* Cards — soft violet glow on hover (no lift) */
+    .glass-card {
+        @apply bg-off-white border border-purple-25 rounded-3xl;
+        box-shadow: 0 2px 16px color-mix(in lab, var(--color-purple-100) 8%, transparent);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-card:hover {
+        @apply border-purple-100;
+        box-shadow:
+            0 0 0 1px color-mix(in lab, var(--color-purple-200) 55%, transparent),
+            0 0 24px color-mix(in lab, var(--color-purple-300) 35%, transparent),
+            0 0 48px color-mix(in lab, var(--color-purple-400) 18%, transparent);
+    }
+
+    .section-heading {
+        @apply text-3xl md:text-4xl font-bold text-purple-600 mb-2;
+    }
+
+    .section-line {
+        @apply h-0.5 rounded-full bg-purple-200 mb-12 origin-left;
+        transform: scaleX(0);
+        transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .section-line.is-visible {
+        transform: scaleX(1);
+    }
+
+    .skill-bar-fill {
+        width: 0;
+        transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .skill-bar-fill.is-visible {
+        width: var(--skill-width);
+    }
+
+    .nav-link {
+        @apply relative text-purple-400 font-medium transition-colors duration-300;
+    }
+
+    .nav-link::after {
+        content: '';
+        @apply absolute -bottom-1 left-0 h-0.5 w-0 bg-purple-500 rounded-full transition-all duration-300;
+    }
+
+    .nav-link:hover,
+    .nav-link.is-active {
+        @apply text-purple-600;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.is-active::after {
+        @apply w-full;
+    }
+
+    /* Primary CTA — soft violet glow on hover */
+    .btn-primary {
+        @apply relative overflow-hidden inline-flex items-center justify-center px-7 py-3.5 rounded-2xl bg-purple-600 text-off-white font-semibold;
+        transition: box-shadow 0.3s ease, background-color 0.3s ease;
+        box-shadow: 0 4px 16px color-mix(in lab, var(--color-purple-600) 20%, transparent);
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        transform: translateX(-100%);
+    }
+
+    .btn-primary:hover {
+        @apply bg-purple-500;
+        box-shadow:
+            0 0 0 1px color-mix(in lab, var(--color-purple-300) 40%, transparent),
+            0 0 20px color-mix(in lab, var(--color-purple-400) 40%, transparent),
+            0 0 40px color-mix(in lab, var(--color-purple-500) 28%, transparent);
+    }
+
+    .btn-primary:hover::before {
+        animation: shimmer 0.8s ease;
+    }
+
+    .btn-outline {
+        @apply inline-flex items-center justify-center px-7 py-3.5 rounded-2xl border border-purple-100 text-purple-600 font-semibold bg-off-white;
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-outline:hover {
+        @apply border-purple-200 bg-secondary-emphasis;
+        box-shadow:
+            0 0 0 1px color-mix(in lab, var(--color-purple-200) 55%, transparent),
+            0 0 24px color-mix(in lab, var(--color-purple-300) 35%, transparent),
+            0 0 48px color-mix(in lab, var(--color-purple-400) 18%, transparent);
+    }
+
+    /* Icon badge — light fill, dark icon */
+    .icon-badge {
+        @apply flex items-center justify-center rounded-2xl bg-purple-25 text-purple-600;
+    }
+
+    /* Experience responsibility list — visible text bullets */
+    .experience-bullets {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .experience-bullets li {
+        display: grid;
+        grid-template-columns: 1rem 1fr;
+        column-gap: 0.5rem;
+        align-items: start;
+    }
+
+    .experience-bullets__mark {
+        color: var(--color-purple-500);
+        font-size: 1.15rem;
+        line-height: 1.25;
+        font-weight: 700;
+    }
+
+    /* Avatar block — neutral surface, purple initials only */
+    .avatar-block {
+        @apply relative flex items-center justify-center rounded-[2rem] bg-secondary-emphasis border border-purple-50;
+        box-shadow: 0 8px 32px color-mix(in lab, var(--color-purple-100) 12%, transparent);
+    }
+
+    .avatar-block-initials {
+        @apply text-7xl md:text-8xl font-bold text-purple-600 select-none;
+    }
+
+    .avatar-block-photo {
+        @apply bg-transparent;
+    }
+
+    /* Hero portrait — soft light violet fade at the bottom */
+    .hero-portrait {
+        -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
+        mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
+    }
+
+    .hero-portrait::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40%;
+        pointer-events: none;
+        background: linear-gradient(
+            to bottom,
+            transparent 0%,
+            color-mix(in lab, var(--color-purple-25) 35%, transparent) 45%,
+            color-mix(in lab, var(--color-purple-50) 55%, var(--color-off-white)) 100%
+        );
+    }
+
+    /* Hero portrait fallback when used without mask support */
+    .avatar-photo {
+        @apply rounded-none border-0 shadow-none outline-none;
+        background: transparent;
+    }
+
+    /* Project thumbnail — only the lightest purple tints */
+    .project-thumb {
+        @apply bg-gradient-to-br from-purple-25 via-secondary-emphasis to-purple-50;
+    }
+
+    .project-shot {
+        transition: opacity 0.25s ease;
+    }
+
+    .project-card:hover .project-shot {
+        opacity: 0.96;
+    }
+
+    /* Full-screen zoomable project screenshot lightbox */
+    .project-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem;
+    }
+
+    .project-lightbox[hidden] {
+        display: none;
+    }
+
+    .project-lightbox__backdrop {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        cursor: zoom-out;
+        background: color-mix(in lab, var(--color-purple-600) 72%, transparent);
+        backdrop-filter: blur(8px);
+    }
+
+    .project-lightbox__panel {
+        position: relative;
+        z-index: 1;
+        width: min(96vw, 1100px);
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .project-lightbox__toolbar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .project-lightbox__btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        border: 0;
+        background: var(--color-off-white);
+        color: var(--color-purple-600);
+        font-size: 1.15rem;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .project-lightbox__btn:hover {
+        transform: none;
+        background: var(--color-secondary-emphasis);
+        box-shadow:
+            0 0 0 1px color-mix(in lab, var(--color-purple-200) 55%, transparent),
+            0 0 18px color-mix(in lab, var(--color-purple-300) 35%, transparent);
+    }
+
+    .project-lightbox__stage {
+        overflow: auto;
+        border-radius: 1.25rem;
+        background: var(--color-off-white);
+        max-height: calc(90vh - 5rem);
+        cursor: grab;
+        overscroll-behavior: contain;
+    }
+
+    .project-lightbox__stage.is-dragging {
+        cursor: grabbing;
+    }
+
+    .project-lightbox__image {
+        display: block;
+        width: 100%;
+        height: auto;
+        transform-origin: center center;
+        transition: transform 0.2s ease;
+        user-select: none;
+    }
+
+    .project-lightbox__hint {
+        text-align: center;
+        font-size: 0.75rem;
+        color: color-mix(in lab, var(--color-off-white) 80%, transparent);
+    }
+
+    body.lightbox-open {
+        overflow: hidden;
+    }
+
+    /* Contact form flash modal */
+    .flash-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 110;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem;
+    }
+
+    .flash-modal[hidden] {
+        display: none;
+    }
+
+    .flash-modal__backdrop {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        cursor: pointer;
+        background: color-mix(in lab, var(--color-purple-600) 55%, transparent);
+        backdrop-filter: blur(6px);
+    }
+
+    .flash-modal__panel {
+        position: relative;
+        z-index: 1;
+        width: min(92vw, 26rem);
+        padding: 1.75rem 1.5rem 1.5rem;
+        border-radius: 1.5rem;
+        background: var(--color-off-white);
+        border: 1px solid var(--color-purple-50);
+        box-shadow:
+            0 0 0 1px color-mix(in lab, var(--color-purple-200) 35%, transparent),
+            0 0 40px color-mix(in lab, var(--color-purple-400) 22%, transparent);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.65rem;
+        animation: fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .flash-modal__icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 9999px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .flash-modal[data-flash-type="success"] .flash-modal__icon {
+        background: color-mix(in lab, var(--color-purple-50) 80%, var(--color-off-white));
+        color: var(--color-purple-500);
+    }
+
+    .flash-modal[data-flash-type="error"] .flash-modal__icon {
+        background: color-mix(in lab, #fecaca 55%, var(--color-off-white));
+        color: #dc2626;
+    }
+
+    .flash-modal__title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-purple-600);
+        margin: 0;
+    }
+
+    .flash-modal__message {
+        font-size: 0.95rem;
+        line-height: 1.55;
+        color: var(--color-purple-400);
+        margin: 0 0 0.35rem;
+    }
+
+    body.flash-modal-open {
+        overflow: hidden;
+    }
+
+    .timeline-line {
+        transform-origin: top;
+        transform: scaleY(0);
+        transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .timeline-line.is-visible {
+        transform: scaleY(1);
+    }
+
+    .hero-enter {
+        animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .hero-enter-delay-1 { animation-delay: 0.15s; }
+    .hero-enter-delay-2 { animation-delay: 0.3s; }
+    .hero-enter-delay-3 { animation-delay: 0.45s; }
+    .hero-enter-delay-4 { animation-delay: 0.6s; }
+
+    .scroll-indicator {
+        animation: bounce-soft 2s ease-in-out infinite;
+    }
+
+    .marquee-track {
+        display: flex;
+        width: max-content;
+        will-change: transform;
+        /* JS drives the scroll — CSS animation is a backup only */
+        animation: none;
+    }
+
+    .marquee-group {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        gap: 1rem;
+        padding-right: 1rem;
+    }
+
+    .marquee-track.is-paused {
+        /* pause on hover via JS */
+    }
+
+    /* Project category tabs */
+    .project-tab {
+        @apply text-purple-400;
+    }
+
+    .project-tab.is-active {
+        @apply bg-purple-600 text-off-white shadow-sm;
+    }
+
+    .project-tab:not(.is-active):hover {
+        @apply text-purple-600 bg-purple-25;
+        box-shadow:
+            0 0 0 1px color-mix(in lab, var(--color-purple-200) 45%, transparent),
+            0 0 18px color-mix(in lab, var(--color-purple-300) 30%, transparent);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .reveal, .reveal-left, .reveal-right, .reveal-scale {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* Skill strip uses JS scroll — no special reduced-motion override needed */
+}
