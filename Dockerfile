@@ -1,7 +1,14 @@
-# PHP 8.3 + Composer + Node (Vite) for Laravel on Render free tier
+# Stage 1: build Vite assets with Node 22 (Vite 8 needs Node 20+)
+FROM node:22-bookworm AS frontend
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: PHP runtime for Render
 FROM php:8.3-cli-bookworm
 
-# System libs + Postgres PDO (Render free DB is PostgreSQL)
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         unzip \
@@ -9,28 +16,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev \
         libzip-dev \
         libpng-dev \
-        nodejs \
-        npm \
-    && docker-php-ext-install -j$(nproc) pdo_pgsql pgsql zip bcmath \
+    && docker-php-ext-install -j$(nproc) pdo_pgsql zip bcmath \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy app source (vendor / node_modules excluded via .dockerignore)
 COPY . .
+COPY --from=frontend /app/public/build ./public/build
 
-# Install PHP deps + build Vite assets into public/build
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
-    && npm ci \
-    && npm run build \
-    && rm -rf node_modules \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache \
+    && chmod +x docker/start.sh
 
-COPY docker/start.sh /usr/local/bin/start-laravel.sh
-RUN chmod +x /usr/local/bin/start-laravel.sh
-
-# Render sets $PORT; php artisan serve binds to it
 EXPOSE 8000
-CMD ["/usr/local/bin/start-laravel.sh"]
+CMD ["bash", "/var/www/html/docker/start.sh"]
