@@ -64,6 +64,8 @@ services:
         value: log
       - key: MAIL_SEND_ENABLED
         value: "false"
+      - key: INBOX_PASSWORD
+        sync: false
       - key: MAIL_SCHEME
         value: smtp
       - key: MAIL_HOST

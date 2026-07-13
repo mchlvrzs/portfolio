@@ -128,4 +128,15 @@ return [
 
     'contact_to' => env('CONTACT_MAIL_TO', env('MAIL_USERNAME')),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Private contact inbox password
+    |--------------------------------------------------------------------------
+    |
+    | Protects /inbox. Leave empty to disable the inbox route (404).
+    |
+    */
+
+    'inbox_password' => env('INBOX_PASSWORD'),
+
 ];
