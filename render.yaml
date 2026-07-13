@@ -38,6 +38,9 @@ services:
         value: pgsql
       - key: DB_SSLMODE
         value: require
+      # Used when Render links an internal-only hostname (dpg-xxxx-a)
+      - key: RENDER_DB_HOST_SUFFIX
+        value: singapore-postgres.render.com
       # Prefer External Database URL from the Postgres dashboard if internal DNS fails.
       # Format: postgres://…@dpg-xxxx.region-postgres.render.com/…
       - key: DB_URL
