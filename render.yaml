@@ -61,7 +61,9 @@ services:
       - key: FILESYSTEM_DISK
         value: local
       - key: MAIL_MAILER
-        value: smtp
+        value: log
+      - key: MAIL_SEND_ENABLED
+        value: "false"
       - key: MAIL_SCHEME
         value: smtp
       - key: MAIL_HOST

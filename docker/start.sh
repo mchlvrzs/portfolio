@@ -87,5 +87,7 @@ try {
 '
 
 PORT="${PORT:-8000}"
-echo "==> Starting server on 0.0.0.0:${PORT}"
+# php artisan serve can handle a few concurrent requests on free tier
+export PHP_CLI_SERVER_WORKERS="${PHP_CLI_SERVER_WORKERS:-4}"
+echo "==> Starting server on 0.0.0.0:${PORT} (workers=${PHP_CLI_SERVER_WORKERS})"
 exec php artisan serve --host=0.0.0.0 --port="${PORT}"

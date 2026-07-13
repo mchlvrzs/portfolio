@@ -22,7 +22,7 @@ class ContactController extends Controller
             'message' => ['required', 'string', 'max:5000'],
         ]);
 
-        // Always persist first — email is best-effort on free hosts (SMTP often blocked/slow)
+        // Persist first — this is the source of truth on free hosts
         try {
             ContactMessage::query()->create($validated);
         } catch (Throwable $e) {
@@ -38,27 +38,25 @@ class ContactController extends Controller
                 ]);
         }
 
-        $to = config('mail.contact_to') ?: Profile::query()->value('email');
-        $mailConfigured = filled(config('mail.mailers.smtp.username'))
-            && filled(config('mail.mailers.smtp.password'));
+        // Gmail SMTP often hangs/blocks on Render and causes HTTP 502.
+        // Only send mail when explicitly enabled (local / paid SMTP / API mailer).
+        if (filter_var(env('MAIL_SEND_ENABLED', false), FILTER_VALIDATE_BOOL)) {
+            $to = config('mail.contact_to') ?: Profile::query()->value('email');
 
-        // Send after the redirect is prepared so a slow/blocked SMTP cannot 502 the browser
-        if (filled($to) && $mailConfigured) {
-            $payload = $validated;
-            $recipient = $to;
-
-            dispatch(function () use ($recipient, $payload): void {
+            if (filled($to)) {
                 try {
-                    Mail::to($recipient)->send(new ContactFormSubmitted($payload));
+                    Mail::to($to)->send(new ContactFormSubmitted($validated));
                 } catch (Throwable $e) {
                     Log::error('Contact form email failed to send.', [
                         'error' => $e->getMessage(),
-                        'to' => $recipient,
+                        'to' => $to,
                     ]);
                 }
-            })->afterResponse();
+            }
         } else {
-            Log::warning('Contact form saved but email skipped (MAIL_USERNAME / MAIL_PASSWORD not set).');
+            Log::info('Contact form saved (email disabled via MAIL_SEND_ENABLED).', [
+                'email' => $validated['email'],
+            ]);
         }
 
         return redirect()
