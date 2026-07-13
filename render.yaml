@@ -36,8 +36,15 @@ services:
         value: info
       - key: DB_CONNECTION
         value: pgsql
-      # Laravel reads DB_URL (Render Internal Database URL)
+      - key: DB_SSLMODE
+        value: require
+      # Prefer External Database URL from the Postgres dashboard if internal DNS fails.
+      # Format: postgres://…@dpg-xxxx.region-postgres.render.com/…
       - key: DB_URL
+        fromDatabase:
+          name: portfolio-db
+          property: connectionString
+      - key: DATABASE_URL
         fromDatabase:
           name: portfolio-db
           property: connectionString
@@ -48,11 +55,6 @@ services:
         value: array
       - key: QUEUE_CONNECTION
         value: sync
-      # Also expose as DATABASE_URL for start.sh fallback mapping
-      - key: DATABASE_URL
-        fromDatabase:
-          name: portfolio-db
-          property: connectionString
       - key: FILESYSTEM_DISK
         value: local
       - key: MAIL_MAILER

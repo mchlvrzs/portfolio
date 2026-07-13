@@ -27,13 +27,41 @@ if [ -n "${DATABASE_URL:-}" ] && [ -z "${DB_URL:-}" ]; then
 fi
 
 if [ -z "${DB_URL:-}" ]; then
-  echo "ERROR: DB_URL is missing. Link the Postgres database in Render."
+  echo "ERROR: DB_URL is missing. Set External Database URL from Postgres on Render."
   exit 1
 fi
 
 export DB_CONNECTION="${DB_CONNECTION:-pgsql}"
+export DB_SSLMODE="${DB_SSLMODE:-require}"
 
-# Avoid stale cached config from a previous crash
+# Show host only (no password) so logs are diagnosable
+DB_HOST_HINT="$(printf '%s' "$DB_URL" | sed -E 's#.*@([^/:+]+).*#\1#')"
+echo "==> DB host: ${DB_HOST_HINT}"
+
+# Internal-only hosts look like "dpg-xxxx-a" with no domain — they often fail DNS.
+# External URL looks like "dpg-xxxx-a.oregon-postgres.render.com"
+case "$DB_HOST_HINT" in
+  *.render.com|*.render.internal) ;;
+  dpg-*)
+    echo "ERROR: DB_URL is using Render INTERNAL hostname (${DB_HOST_HINT})."
+    echo "Fix: Postgres → Connect → copy External Database URL into DB_URL and DATABASE_URL."
+    echo "It must contain something like '.oregon-postgres.render.com' (region may differ)."
+    exit 1
+    ;;
+esac
+
+# Ensure sslmode=require on the URL for external Render Postgres
+case "$DB_URL" in
+  *sslmode=*) ;;
+  *)
+    case "$DB_URL" in
+      *\?*) export DB_URL="${DB_URL}&sslmode=require" ;;
+      *)    export DB_URL="${DB_URL}?sslmode=require" ;;
+    esac
+    echo "==> Appended sslmode=require to DB_URL"
+    ;;
+esac
+
 php artisan config:clear 2>/dev/null || true
 php artisan route:clear 2>/dev/null || true
 php artisan view:clear 2>/dev/null || true
@@ -55,7 +83,6 @@ try {
         echo "Seed skipped (data already present).\n";
     }
 } catch (Throwable $e) {
-    // Do not kill the web process if seed fails — site can still boot
     fwrite(STDERR, "Seed warning: " . $e->getMessage() . "\n");
 }
 '
