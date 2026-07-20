@@ -207,9 +207,14 @@
                 <div class="section-line w-24 mx-auto"></div>
             </div>
 
-            {{-- Tabs --}}
+            {{-- Tabs — high-contrast so visitors can tell they switch project categories --}}
             <div class="reveal mb-10 flex flex-col items-center" data-project-tabs>
-                <div class="inline-flex p-1 rounded-2xl bg-off-white border border-purple-25" role="tablist" aria-label="Project categories">
+                <p class="text-sm text-purple-400 mb-3">Switch category</p>
+                <div
+                    class="project-tablist inline-flex gap-1 p-1.5 rounded-2xl"
+                    role="tablist"
+                    aria-label="Project categories"
+                >
                     <button
                         type="button"
                         role="tab"
