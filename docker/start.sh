@@ -87,7 +87,7 @@ try {
 '
 
 PORT="${PORT:-8000}"
-# php artisan serve can handle a few concurrent requests on free tier
+# --no-reload enables PHP_CLI_SERVER_WORKERS so /up is not blocked behind slow page loads
 export PHP_CLI_SERVER_WORKERS="${PHP_CLI_SERVER_WORKERS:-4}"
 echo "==> Starting server on 0.0.0.0:${PORT} (workers=${PHP_CLI_SERVER_WORKERS})"
-exec php artisan serve --host=0.0.0.0 --port="${PORT}"
+exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
