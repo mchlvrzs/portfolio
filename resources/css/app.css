@@ -586,10 +586,8 @@
 
     /* Project category tabs — clear switcher vs page background */
     .project-tablist {
-        @apply bg-off-white border-2 border-purple-200;
-        box-shadow:
-            0 2px 12px color-mix(in lab, var(--color-purple-200) 22%, transparent),
-            inset 0 0 0 1px color-mix(in lab, var(--color-purple-100) 40%, transparent);
+        @apply bg-transparent border-0 p-0 gap-2;
+        box-shadow: none;
     }
 
     .project-tab {

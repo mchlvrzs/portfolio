@@ -211,7 +211,7 @@
             <div class="reveal mb-10 flex flex-col items-center" data-project-tabs>
                 <p class="text-sm text-purple-400 mb-3">Switch category</p>
                 <div
-                    class="project-tablist inline-flex gap-1 p-1.5 rounded-2xl"
+                    class="project-tablist inline-flex items-center"
                     role="tablist"
                     aria-label="Project categories"
                 >
